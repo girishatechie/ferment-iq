@@ -307,10 +307,10 @@ def features_df_from_transformed(X_transformed, pipeline: PipelineInfo):
 
 def train_model(X, y):
     if HAS_XGBOOST:
-        model = xgb.XGBRegressor(n_estimators=200, max_depth=6, learning_rate=0.05, random_state=0, verbosity=0)
+        model = xgb.XGBRegressor(n_estimators=200, max_depth=6, learning_rate=0.05, random_state=0, verbosity=0, n_jobs=1)
         model.fit(X, y)
     else:
-        model = RandomForestRegressor(n_estimators=200, random_state=0)
+        model = RandomForestRegressor(n_estimators=200, random_state=0, n_jobs=1)
         model.fit(X, y)
     return model
 
