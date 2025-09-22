@@ -590,7 +590,7 @@ def run_streamlit_app():
     st.pyplot(fig_reg_bar)
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='PF Trust & Acceptance starter (no sensory)')
+    parser = argparse.ArgumentParser(description='PF Trust & Acceptance starter')
     parser.add_argument('--test', action='store_true', help='Run built-in tests')
     parser.add_argument('--cli', action='store_true', help='Run CLI demo (no UI)')
     args = parser.parse_args()
