@@ -1,3 +1,19 @@
+
+import os
+import logging
+
+os.environ.setdefault('OMP_NUM_THREADS', '1')
+os.environ.setdefault('OPENBLAS_NUM_THREADS', '1')
+os.environ.setdefault('MKL_NUM_THREADS', '1')
+os.environ.setdefault('VECLIB_MAXIMUM_THREADS', '1')
+os.environ.setdefault('NUMEXPR_NUM_THREADS', '1')
+
+os.environ.setdefault('MALLOC_ARENA_MAX', '4')
+
+DISABLE_XGBOOST = os.getenv('DISABLE_XGBOOST', '0') == '1'
+if DISABLE_XGBOOST:
+    logging.info('DISABLE_XGBOOST env var set; XGBoost import will be skipped; using RandomForest fallback.')
+
 import os
 from dataclasses import dataclass
 import logging
@@ -25,14 +41,19 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_squared_error, r2_score
 
-try:
-    import xgboost as xgb
-    HAS_XGBOOST = True
-    logging.info('xgboost available — will use XGBRegressor')
-except Exception:
+if not DISABLE_XGBOOST:
+    try:
+        import xgboost as xgb
+        HAS_XGBOOST = True
+        logging.info('xgboost available — will use XGBRegressor')
+    except Exception as e:
+        HAS_XGBOOST = False
+        logging.exception('xgboost import failed or not present — falling back to RandomForestRegressor')
+        from sklearn.ensemble import RandomForestRegressor
+else:
     HAS_XGBOOST = False
-    logging.info('xgboost not available — using RandomForestRegressor fallback')
     from sklearn.ensemble import RandomForestRegressor
+    logging.info('xgboost import skipped by DISABLE_XGBOOST - using RandomForestRegressor')
 
 try:
     import shap
